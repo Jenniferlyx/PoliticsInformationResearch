@@ -43,85 +43,6 @@ class CandCollector(object):
         self.df_cand = df_cand
         self.states = states
 
-    
-    # def scrape_detailed_info(self, page):
-    #     twitter_dict = collections.defaultdict(str)
-    #     position = "unknown"
-    #     party = "unknown"
-    #     status = "unknown"
-    #     year = float("-inf")
-    #     texts = ""
-    #     if not page.find("div", class_="infobox person"):
-    #         return None
-    #     for p in page.find("div", class_="infobox person"):
-    #         if p.find("a") and p.find("a") != -1:
-    #             if "twitter" in p.find("a").text:
-    #                 twitter_dict[p.find("a").text] = p.find("a", href=True)["href"]
-    #         if "Party" in p.text:
-    #             party = p.text.strip().split(' ')[0]
-    #         for pos in self.positions:
-    #             if pos in p.text:
-    #                 position = pos
-    #                 break
-    #         for s in ["Last election", "Last elected"]:
-    #             if s in p.text:
-    #                 status = s
-    #                 break
-    #         if p.text.strip().replace('\t', ''):
-    #             texts += " " + p.text.strip().replace('\t', '')
-    #     year = max([year] + [int(y) for y in self.year_matcher.findall(texts)])   
-    #     if position == "unknown":
-    #         if page.find("h5", class_="votebox-header-election-type"):
-    #             text = page.find("h5", class_="votebox-header-election-type").text
-    #             for pos in self.positions:
-    #                 if pos in text:
-    #                     position = pos
-    #                     break
-    #     info = {"Party": party, "Position": position, "Status": status, "Year": year, "Twitter": twitter_dict}
-    #     return info
-        # position = ""
-        # status = "unknown"
-        # year = -float("inf")
-        # pages = page.find("div", id="toc", class_="toc").find_all_previous("p")
-        # if page.find("span", id="Biography", class_="mw-headline") and \
-        #     page.find("span", id="Biography", class_="mw-headline").find_all_previous("p"):   
-        #     pages += page.find("span", id="Biography", class_="mw-headline").find_all_previous("p")
-        #     # e.g. https://ballotpedia.org/Donald_Trump
-        # for p in pages:
-        #     text = p.text
-        #     for status_option in ["lost", "won", "disqualified", "ran", "run", "is running for"]:
-        #         if status_option in text:
-        #             status = status_option
-        #             year = max([year] + [int(y) for y in self.year_matcher.findall(text)])
-        #             # The default position is Secretary of State
-        #             position = "Secretary of State"
-        #             for pos in self.positions:
-        #                 if pos in text:
-        #                     position = pos
-        #                     break
-        #             break
-        # contacts = page.findAll(
-        #     "div", {"class": "widget-row value-only white"})
-        # info = {"Position": position, "Status": status, "Year": year}
-        # twitter_dict = collections.defaultdict(str)
-        # for contact in contacts:
-        #     if "republican" in contact.text.lower():
-        #         info["Party"] = "Republican"
-        #     elif "democratic" in contact.text.lower():
-        #         info["Party"] = "Democratic"
-        #     elif "green" in contact.text.lower():
-        #         info["Party"] = "Green"
-        #     elif "independent" in contact.text.lower():
-        #         info["Party"] = "Independent"
-        #     elif "constitution" in contact.text.lower():
-        #         info["Party"] = "Constitution"
-        #     elif "libertarian" in contact.text.lower():
-        #         info["Party"] = "Libertarian"
-        #     if "twitter" in contact.text.lower():
-        #         twitter_dict[contact.find("a").text] = contact.find("a")["href"]
-        # info["Twitter"] = twitter_dict
-        # return info
-
     @classmethod
     def scrape_profile_info(self, href: str) -> Dict[str, str]:
         """Scrap the twitter account and other information of the candidate from its personal webpage from ballotpedia"""
@@ -185,7 +106,6 @@ class CandCollector(object):
                     for pos in self.positions:
                         if pos in page.text and page['href'] not in list(position_href_dict.values()):
                             position_href_dict[page.text] = page['href']
-            # print(position_href_dict.keys())
             for pos, page_link in position_href_dict.items():
                 try:
                     cand_page = requests.get(f"{self.url}{page_link}")
@@ -196,10 +116,6 @@ class CandCollector(object):
                         f"{pos} doesn't exist for state {state}: {traceback.format_exc()}")
             print(pd.DataFrame(cand_info))
         return pd.DataFrame(cand_info)
-        # cand_info = pd.DataFrame(cand_info)
-        # cand_info = cand_info[cand_info.apply(self.filter, axis=1)]
-        # # e.g. https://ballotpedia.org/Massachusetts_State_Senate
-        # return cand_info
 
 if __name__ == "__main__":
     with open("Data/GeoInfo.json", "r") as f:
