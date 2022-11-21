@@ -51,7 +51,7 @@ class CandCollector(object):
         if not page.find("div", class_="infobox person"):
             return None
 
-        twitter_dict = collections.defaultdict(str)
+        twitter_dict = {}
         party = "unknown"
         status = "unknown"
         year = float("-inf")
